@@ -70,6 +70,18 @@ export default function Header({ dict, locale }: Props) {
     };
   }, [mobileOpen]);
 
+  /* Поворот планшета может перевести вёрстку в десктопную прямо с открытой
+     панелью. Сама она спрячется по lg:hidden, а замок прокрутки остался бы
+     висеть — и страница перестала бы скроллиться без единого видимого меню. */
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const onChange = (e: MediaQueryListEvent) => {
+      if (e.matches) setMobileOpen(false);
+    };
+    desktop.addEventListener("change", onChange);
+    return () => desktop.removeEventListener("change", onChange);
+  }, []);
+
   const closeAll = useCallback(() => {
     setMegaOpen(false);
     setMobileOpen(false);
@@ -86,7 +98,7 @@ export default function Header({ dict, locale }: Props) {
     [closeAll, locale, router],
   );
 
-  /* Наведение и фокус открывают панель, увод — закрывает. Задержка нужна,
+  /* Наведение открывает панель, увод — закрывает. Задержка нужна,
      чтобы панель не захлопывалась, пока курсор перебирается на неё с пункта
      меню. Сам пункт остаётся ссылкой: клик уводит на страницу услуг. */
   const openMega = () => {
@@ -105,161 +117,174 @@ export default function Header({ dict, locale }: Props) {
     }`;
 
   return (
-    <header
-      ref={headerRef}
-      className={`sticky top-0 z-50 transition-shadow duration-300 ${
-        scrolled
-          ? "bg-paper/85 shadow-[0_1px_0_0_var(--color-line)] backdrop-blur-md"
-          : "bg-paper"
-      }`}
-    >
-      <a
-        href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:rounded-lg focus:bg-brand focus:px-4 focus:py-2 focus:text-sm focus:text-white"
+    <>
+      <header
+        ref={headerRef}
+        className={`sticky top-0 z-50 transition-shadow duration-300 ${
+          scrolled
+            ? "bg-paper/85 shadow-[0_1px_0_0_var(--color-line)] backdrop-blur-md"
+            : "bg-paper"
+        }`}
       >
-        {dict.nav.skipToContent}
-      </a>
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:rounded-lg focus:bg-brand focus:px-4 focus:py-2 focus:text-sm focus:text-white"
+        >
+          {dict.nav.skipToContent}
+        </a>
 
-      <Container>
-        <div className="flex h-16 items-center justify-between gap-4 lg:h-20">
-          <Link
-            href={routeHref(locale)}
-            onClick={closeAll}
-            className="shrink-0"
-            aria-label="Defcode"
-          >
-            <Logo priority className="h-6 w-auto sm:h-7" />
-          </Link>
-
-          {/* --- Десктопная навигация --- */}
-          <nav className="hidden items-center gap-1 lg:flex" aria-label="main">
-            {/* Панель — надстройка для мыши: её содержимое целиком есть
-                на странице услуг, куда ведёт сам пункт меню. Поэтому
-                ни aria-expanded, ни доступа с клавиатуры ей не нужно —
-                иначе получилось бы состояние, в которое нельзя попасть табом. */}
-            <div onMouseEnter={openMega} onMouseLeave={closeMega}>
-              <Link
-                href={routeHref(locale, "services")}
-                onClick={closeAll}
-                aria-current={current === "services" ? "page" : undefined}
-                className={`flex items-center gap-1.5 ${linkClass(current === "services")}`}
-              >
-                {dict.nav.services}
-                <svg
-                  viewBox="0 0 12 12"
-                  aria-hidden="true"
-                  className={`size-3 transition-transform duration-200 ${megaOpen ? "rotate-180" : ""}`}
-                >
-                  <path
-                    d="M2.5 4.5 6 8l3.5-3.5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </Link>
-            </div>
-
-            {nav.map((item) => (
-              <Link
-                key={item.key}
-                href={routeHref(locale, item.key)}
-                onClick={closeAll}
-                aria-current={current === item.key ? "page" : undefined}
-                className={linkClass(current === item.key)}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-
-          <div className="flex items-center gap-2 sm:gap-3">
-            <LocaleSwitch locale={locale} className="hidden sm:inline-flex" />
-
+        <Container>
+          <div className="flex h-16 items-center justify-between gap-4 lg:h-20">
             <Link
-              href={routeHref(locale, "contacts")}
+              href={routeHref(locale)}
               onClick={closeAll}
-              className="hidden items-center gap-2 rounded-full bg-brand px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark sm:inline-flex"
+              className="shrink-0"
+              aria-label="Defcode"
             >
-              {dict.nav.cta}
-              <ArrowRight />
+              <Logo priority className="h-6 w-auto sm:h-7" />
             </Link>
 
-            <button
-              type="button"
-              onClick={() => setMobileOpen((v) => !v)}
-              aria-expanded={mobileOpen}
-              aria-label={mobileOpen ? dict.nav.closeMenu : dict.nav.openMenu}
-              className="-mr-2 grid size-11 place-items-center rounded-xl text-ink lg:hidden"
-            >
-              <Burger open={mobileOpen} />
-            </button>
-          </div>
-        </div>
-      </Container>
-
-      {/* --- Мега-меню (десктоп) --- */}
-      <div
-        id="mega-menu"
-        onMouseEnter={openMega}
-        onMouseLeave={closeMega}
-        className={`absolute inset-x-0 top-full hidden origin-top transition duration-200 lg:block ${
-          megaOpen
-            ? "pointer-events-auto scale-100 opacity-100"
-            : "pointer-events-none -translate-y-1 scale-[0.99] opacity-0"
-        }`}
-        aria-hidden={!megaOpen}
-        inert={!megaOpen}
-      >
-        <Container>
-          <div className="mb-6 rounded-3xl border border-line bg-white p-6 shadow-[0_24px_60px_-24px_rgba(14,14,49,0.28)] xl:p-8">
-            <div className="mb-6 flex items-baseline justify-between gap-6">
-              <div>
-                <p className="text-lg font-semibold text-ink">{dict.mega.heading}</p>
-                <p className="mt-1 text-sm text-muted">{dict.mega.note}</p>
+            {/* --- Десктопная навигация --- */}
+            <nav className="hidden items-center gap-1 lg:flex" aria-label="main">
+              {/* Панель — надстройка для мыши: её содержимое целиком есть
+                  на странице услуг, куда ведёт сам пункт меню. Поэтому
+                  ни aria-expanded, ни доступа с клавиатуры ей не нужно —
+                  иначе получилось бы состояние, в которое нельзя попасть табом. */}
+              <div onMouseEnter={openMega} onMouseLeave={closeMega}>
+                <Link
+                  href={routeHref(locale, "services")}
+                  onClick={closeAll}
+                  aria-current={current === "services" ? "page" : undefined}
+                  className={`flex items-center gap-1.5 ${linkClass(current === "services")}`}
+                >
+                  {dict.nav.services}
+                  <svg
+                    viewBox="0 0 12 12"
+                    aria-hidden="true"
+                    className={`size-3 transition-transform duration-200 ${megaOpen ? "rotate-180" : ""}`}
+                  >
+                    <path
+                      d="M2.5 4.5 6 8l3.5-3.5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </Link>
               </div>
+
+              {nav.map((item) => (
+                <Link
+                  key={item.key}
+                  href={routeHref(locale, item.key)}
+                  onClick={closeAll}
+                  aria-current={current === item.key ? "page" : undefined}
+                  className={linkClass(current === item.key)}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+
+            <div className="flex items-center gap-2 sm:gap-3">
+              <LocaleSwitch locale={locale} className="hidden sm:inline-flex" />
+
               <Link
-                href={routeHref(locale, "services")}
+                href={routeHref(locale, "contacts")}
                 onClick={closeAll}
-                className="inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-brand transition-colors hover:text-brand-dark"
+                className="hidden items-center gap-2 rounded-full bg-brand px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark sm:inline-flex"
               >
-                {dict.mega.cta}
+                {dict.nav.cta}
                 <ArrowRight />
               </Link>
-            </div>
 
-            <div className="grid grid-cols-2 gap-x-6 gap-y-7 xl:grid-cols-3">
-              {dict.mega.groups.map((group) => (
-                <div key={group.title}>
-                  <p className="flex items-center gap-2 text-sm font-semibold text-ink">
-                    <span aria-hidden="true" className="font-mono text-brand">
-                      {"}"}
-                    </span>
-                    {group.title}
-                  </p>
-                  <ul className="mt-3 flex flex-wrap gap-1.5">
-                    {group.tags.map((tag) => (
-                      <li key={tag}>
-                        <button
-                          type="button"
-                          onClick={() => onTagClick(tag)}
-                          className="rounded-full bg-paper px-2.5 py-1 text-[13px] text-muted transition-colors hover:bg-brand-tint hover:text-brand-dark"
-                        >
-                          {tag}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+              <button
+                type="button"
+                onClick={() => setMobileOpen((v) => !v)}
+                aria-expanded={mobileOpen}
+                aria-label={mobileOpen ? dict.nav.closeMenu : dict.nav.openMenu}
+                className="-mr-2 grid size-11 place-items-center rounded-xl text-ink lg:hidden"
+              >
+                <Burger open={mobileOpen} />
+              </button>
             </div>
           </div>
         </Container>
-      </div>
 
-      {/* --- Мобильная панель --- */}
+        {/* --- Мега-меню (десктоп) --- */}
+        <div
+          id="mega-menu"
+          onMouseEnter={openMega}
+          onMouseLeave={closeMega}
+          className={`absolute inset-x-0 top-full hidden origin-top transition duration-200 lg:block ${
+            megaOpen
+              ? "pointer-events-auto scale-100 opacity-100"
+              : "pointer-events-none -translate-y-1 scale-[0.99] opacity-0"
+          }`}
+          aria-hidden={!megaOpen}
+          inert={!megaOpen}
+        >
+          <Container>
+            <div className="mb-6 rounded-3xl border border-line bg-white p-6 shadow-[0_24px_60px_-24px_rgba(14,14,49,0.28)] xl:p-8">
+              <div className="mb-6 flex items-baseline justify-between gap-6">
+                <div>
+                  <p className="text-lg font-semibold text-ink">{dict.mega.heading}</p>
+                  <p className="mt-1 text-sm text-muted">{dict.mega.note}</p>
+                </div>
+                <Link
+                  href={routeHref(locale, "services")}
+                  onClick={closeAll}
+                  className="inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-brand transition-colors hover:text-brand-dark"
+                >
+                  {dict.mega.cta}
+                  <ArrowRight />
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-2 gap-x-6 gap-y-7 xl:grid-cols-3">
+                {dict.mega.groups.map((group) => (
+                  <div key={group.title}>
+                    <p className="flex items-center gap-2 text-sm font-semibold text-ink">
+                      <span aria-hidden="true" className="font-mono text-brand">
+                        {"}"}
+                      </span>
+                      {group.title}
+                    </p>
+                    <ul className="mt-3 flex flex-wrap gap-1.5">
+                      {group.tags.map((tag) => (
+                        <li key={tag}>
+                          <button
+                            type="button"
+                            onClick={() => onTagClick(tag)}
+                            className="rounded-full bg-paper px-2.5 py-1 text-[13px] text-muted transition-colors hover:bg-brand-tint hover:text-brand-dark"
+                          >
+                            {tag}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Container>
+        </div>
+      </header>
+
+      {/* --- Мобильная панель ---
+
+          Лежит СНАРУЖИ шапки, и это принципиально. При прокрутке шапка
+          получает backdrop-blur, а `backdrop-filter` превращает элемент
+          в containing block для потомков с `position: fixed`. Пока панель
+          была внутри, её `top-16 bottom-0` отсчитывались не от экрана,
+          а от шапки высотой 64px: высота схлопывалась в ноль, и меню
+          открывалось невидимым везде, кроме самого верха страницы.
+          Нижнюю кнопку внутри панели ломало ровно так же.
+
+          Тот же капкан ждёт любой transform, filter или will-change
+          на шапке — если понадобятся, панель должна остаться снаружи. */}
       <div
         className={`fixed inset-x-0 top-16 bottom-0 z-40 overflow-y-auto overscroll-contain bg-paper transition-opacity duration-200 lg:hidden ${
           mobileOpen ? "opacity-100" : "pointer-events-none opacity-0"
@@ -376,7 +401,7 @@ export default function Header({ dict, locale }: Props) {
           </Link>
         </div>
       </div>
-    </header>
+    </>
   );
 }
 
