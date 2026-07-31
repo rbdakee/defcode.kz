@@ -1,5 +1,5 @@
 import Reveal from "../Reveal";
-import { Section, SectionHead } from "../ui";
+import { bubble, Section, SectionHead } from "../ui";
 import { routeHref } from "@/lib/routes";
 import type { Locale } from "@/i18n/config";
 import type { Dict } from "@/i18n";
@@ -30,7 +30,7 @@ export default function ProcessPreview({
         {dict.process.steps.map((step, i) => (
           <li key={step.title}>
             <Reveal delay={i * 60}>
-              <div className="h-full rounded-card border border-line bg-white p-5">
+              <div className={`h-full ${bubble} p-5`}>
                 {/* Preflight гасит маркеры списка, поэтому номер рисуем сами. */}
                 <span
                   aria-hidden="true"

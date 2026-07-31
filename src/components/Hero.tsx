@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ArrowRight, Container } from "./ui";
+import { ArrowRight, bubble, Container } from "./ui";
 import { stats } from "@/content/company";
 import { routeHref } from "@/lib/routes";
 import type { Locale } from "@/i18n/config";
@@ -43,11 +43,14 @@ export default function Hero({ dict, locale }: { dict: Dict; locale: Locale }) {
   ].filter((s): s is { value: string; label: string } => Boolean(s.value));
 
   return (
-    <section className="relative overflow-hidden pt-12 pb-16 sm:pt-16 sm:pb-20 lg:pt-24 lg:pb-28">
+    <section className="relative pt-12 pb-16 sm:pt-16 sm:pb-20 lg:pt-24 lg:pb-28">
       {/* Декор: мягкое свечение бренда. pointer-events-none, чтобы
-          не перехватывать нажатия на мобильном. Радиальный градиент,
-          а не размытый круг: у него прозрачный край, поэтому обрезка
-          по границе секции не оставляет жёсткой кромки на белом фоне. */}
+          не перехватывать нажатия на мобильном.
+
+          Обрезки по границе секции быть не должно: пятно висит на белом
+          и любой срез читается как прямоугольная заплатка. Поэтому здесь
+          нет overflow-hidden — пятно гаснет само, а горизонтальный сдвиг
+          снимает overflow-x у body. */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
         <div className="drift absolute -top-32 -right-24 size-[28rem] bg-radial from-brand/15 to-transparent to-70% sm:size-[36rem]" />
         <div className="drift absolute -bottom-40 -left-32 size-[22rem] bg-radial from-brand-light/13 to-transparent to-70% [animation-delay:-5s] sm:size-[30rem]" />
@@ -119,13 +122,13 @@ export default function Hero({ dict, locale }: { dict: Dict; locale: Locale }) {
           <CodeWindow />
         </div>
 
-        <div className="mt-12 border-t border-line pt-8 sm:mt-16">
+        {/* Цифры и бейджи — тоже пузыри: линия-разделитель здесь только
+            расчерчивала бы белое поле, а заливка отделяет их сама. */}
+        <div className="mt-12 sm:mt-16">
           {filledStats.length > 0 ? (
-            <dl
-              className={`grid grid-cols-2 gap-x-6 gap-y-8 ${STAT_COLUMNS[filledStats.length]}`}
-            >
+            <dl className={`grid grid-cols-2 gap-3 ${STAT_COLUMNS[filledStats.length]}`}>
               {filledStats.map((stat) => (
-                <div key={stat.label}>
+                <div key={stat.label} className={`${bubble} p-5`}>
                   <dt className="sr-only">{stat.label}</dt>
                   <dd>
                     <span className="block text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
@@ -137,9 +140,12 @@ export default function Hero({ dict, locale }: { dict: Dict; locale: Locale }) {
               ))}
             </dl>
           ) : (
-            <ul className="flex flex-wrap gap-x-6 gap-y-3">
+            <ul className="flex flex-wrap gap-2">
               {hero.fallbackBadges.map((badge) => (
-                <li key={badge} className="flex items-center gap-2 text-sm text-muted">
+                <li
+                  key={badge}
+                  className={`${bubble} flex items-center gap-2 px-4 py-2.5 text-sm text-muted`}
+                >
                   <Check />
                   {badge}
                 </li>

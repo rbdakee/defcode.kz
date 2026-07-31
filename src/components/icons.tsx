@@ -25,27 +25,18 @@ function Base({ children, className = "" }: { children: ReactNode; className?: s
   );
 }
 
-/**
- * Плитка с иконкой — единый вид визуальных якорей в карточках.
- * Тёмный вариант — для панелей night.
- */
+/** Плитка с иконкой — единый вид визуальных якорей в карточках. */
 export function IconTile({
   icon: Icon,
-  dark = false,
   className = "",
 }: {
   icon: IconComponent;
-  dark?: boolean;
   className?: string;
 }) {
   return (
     <span
       aria-hidden="true"
-      className={`grid size-11 shrink-0 place-items-center rounded-xl ${
-        dark
-          ? "bg-white/8 text-brand-light ring-1 ring-white/10 ring-inset"
-          : "bg-brand-tint text-brand"
-      } ${className}`}
+      className={`grid size-11 shrink-0 place-items-center rounded-xl bg-brand-tint text-brand ${className}`}
     >
       <Icon className="size-5.5" />
     </span>

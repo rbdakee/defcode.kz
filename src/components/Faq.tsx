@@ -1,22 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { Section, SectionHead } from "./ui";
+import { bubble, Section, SectionHead } from "./ui";
 import type { Dict } from "@/i18n";
 
 export default function Faq({ dict }: { dict: Dict }) {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <Section id="faq" tone="none">
+    <Section id="faq">
       <div className="grid gap-10 lg:grid-cols-[minmax(0,22rem)_1fr] lg:gap-16">
         <SectionHead title={dict.faq.heading} sub={dict.faq.sub} />
 
-        <div className="divide-y divide-line border-y border-line">
+        <div className="grid gap-2 sm:gap-3">
           {dict.faq.items.map((item, i) => {
             const isOpen = open === i;
             return (
-              <div key={item.q}>
+              <div key={item.q} className={bubble}>
                 <h3>
                   <button
                     type="button"
@@ -24,7 +24,7 @@ export default function Faq({ dict }: { dict: Dict }) {
                     aria-expanded={isOpen}
                     aria-controls={`faq-panel-${i}`}
                     id={`faq-button-${i}`}
-                    className="flex w-full items-start justify-between gap-6 py-5 text-left"
+                    className="flex w-full items-start justify-between gap-6 p-5 text-left sm:p-6"
                   >
                     <span className="text-base font-medium text-balance text-ink sm:text-lg">
                       {item.q}
@@ -59,7 +59,7 @@ export default function Faq({ dict }: { dict: Dict }) {
                   }`}
                 >
                   <div className="overflow-hidden">
-                    <p className="max-w-2xl pb-5 text-[15px] leading-relaxed text-pretty text-muted">
+                    <p className="max-w-2xl px-5 pb-5 text-[15px] leading-relaxed text-pretty text-muted sm:px-6 sm:pb-6">
                       {item.a}
                     </p>
                   </div>

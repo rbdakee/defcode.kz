@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Section } from "./ui";
+import { bubble, Section } from "./ui";
 import { MEGA_GROUP_ICONS } from "./icons";
 import { stashPrefill } from "@/lib/prefill";
 import { routeHref } from "@/lib/routes";
@@ -28,7 +28,7 @@ export default function ServiceTagGroups({
   };
 
   return (
-    <Section tone="none">
+    <Section>
       <h2 className="text-2xl font-semibold tracking-tight text-balance text-ink sm:text-3xl">
         {dict.services.tagsHeading}
       </h2>
@@ -36,11 +36,13 @@ export default function ServiceTagGroups({
         {dict.services.tagsNote}
       </p>
 
-      <div className="mt-10 grid gap-x-8 gap-y-9 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {dict.mega.groups.map((group, i) => {
           const Icon = MEGA_GROUP_ICONS[i];
           return (
-            <div key={group.title}>
+            /* Группа — пузырь, задачи внутри белые: на сером фоне
+               группы они не сливались бы с ним, как на белом фоне страницы. */
+            <div key={group.title} className={`${bubble} p-5`}>
               <h3 className="flex items-center gap-2.5 text-sm font-semibold text-ink">
                 <span
                   aria-hidden="true"
@@ -56,7 +58,7 @@ export default function ServiceTagGroups({
                     <button
                       type="button"
                       onClick={() => onTagClick(tag)}
-                      className="rounded-full bg-paper px-3 py-1.5 text-[13px] text-muted transition-colors hover:bg-brand-tint hover:text-brand-dark sm:text-sm"
+                      className="rounded-full bg-white px-3 py-1.5 text-[13px] text-muted transition-colors hover:bg-brand-tint hover:text-brand-dark sm:text-sm"
                     >
                       {tag}
                     </button>

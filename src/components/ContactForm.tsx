@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Section } from "./ui";
+import { bubble, Section } from "./ui";
 import {
   IconChat,
   IconMail,
@@ -80,19 +80,19 @@ export default function ContactForm({ dict }: { dict: Dict }) {
   }
 
   return (
-    <Section id="contact" tone="night">
+    <Section id="contact">
       <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
           <div>
-            <h1 className="text-3xl leading-[1.1] font-semibold tracking-tight text-balance sm:text-4xl lg:text-5xl">
+            <h1 className="text-3xl leading-[1.1] font-semibold tracking-tight text-balance text-ink sm:text-4xl lg:text-5xl">
               {t.heading}
             </h1>
-            <p className="mt-4 max-w-lg text-base leading-relaxed text-pretty text-muted-dark sm:text-lg">
+            <p className="mt-4 max-w-lg text-base leading-relaxed text-pretty text-muted sm:text-lg">
               {t.sub}
             </p>
 
             {hasDirectContacts ? (
               <div className="mt-8">
-                <p className="font-mono text-xs tracking-widest text-muted-dark uppercase">
+                <p className="font-mono text-xs tracking-widest text-muted uppercase">
                   {t.orWrite}
                 </p>
                 <ul className="mt-3 flex flex-wrap gap-2">
@@ -118,13 +118,13 @@ export default function ContactForm({ dict }: { dict: Dict }) {
                   ) : null}
                 </ul>
                 {company.workingHours ? (
-                  <p className="mt-3 text-sm text-muted-dark">{company.workingHours}</p>
+                  <p className="mt-3 text-sm text-muted">{company.workingHours}</p>
                 ) : null}
               </div>
             ) : null}
           </div>
 
-          <div className="rounded-card bg-night-2 p-6 ring-1 ring-line-dark ring-inset sm:p-8">
+          <div className={`${bubble} p-6 sm:p-8`}>
             {status === "sent" ? (
               <div className="flex h-full min-h-64 flex-col items-start justify-center">
                 <span
@@ -142,8 +142,8 @@ export default function ContactForm({ dict }: { dict: Dict }) {
                     />
                   </svg>
                 </span>
-                <h3 className="mt-5 text-xl font-semibold">{t.successTitle}</h3>
-                <p className="mt-2 text-[15px] leading-relaxed text-muted-dark">
+                <h3 className="mt-5 text-xl font-semibold text-ink">{t.successTitle}</h3>
+                <p className="mt-2 text-[15px] leading-relaxed text-muted">
                   {t.successText}
                 </p>
               </div>
@@ -165,14 +165,14 @@ export default function ContactForm({ dict }: { dict: Dict }) {
                 />
 
                 <label className="flex flex-col gap-2">
-                  <span className="text-sm font-medium text-white">{t.task}</span>
+                  <span className="text-sm font-medium text-ink">{t.task}</span>
                   <textarea
                     name="task"
                     rows={4}
                     value={task}
                     onChange={(e) => setTask(e.target.value)}
                     placeholder={t.taskPlaceholder}
-                    className="resize-y rounded-2xl bg-night px-4 py-3 text-base text-white ring-1 ring-line-dark ring-inset placeholder:text-muted-dark/70 focus:ring-brand focus:outline-none"
+                    className="resize-y rounded-2xl bg-white px-4 py-3 text-base text-ink ring-1 ring-line ring-inset placeholder:text-muted/60 focus:ring-brand focus:outline-none"
                   />
                 </label>
 
@@ -194,12 +194,12 @@ export default function ContactForm({ dict }: { dict: Dict }) {
                 </button>
 
                 {status === "error" ? (
-                  <p role="alert" className="text-sm text-red-300">
+                  <p role="alert" className="text-sm text-red-600">
                     {t.errorSend}
                   </p>
                 ) : null}
 
-                <p className="text-xs leading-relaxed text-muted-dark">{t.privacy}</p>
+                <p className="text-xs leading-relaxed text-muted">{t.privacy}</p>
               </form>
             )}
         </div>
@@ -225,19 +225,19 @@ function Field({
 }) {
   return (
     <label className="flex flex-col gap-2">
-      <span className="text-sm font-medium text-white">{label}</span>
+      <span className="text-sm font-medium text-ink">{label}</span>
       <input
         name={name}
         type="text"
         placeholder={placeholder}
         autoComplete={autoComplete}
         aria-invalid={error ? true : undefined}
-        className={`h-13 rounded-2xl bg-night px-4 text-base text-white ring-1 ring-inset placeholder:text-muted-dark/70 focus:outline-none ${
-          error ? "ring-red-400" : "ring-line-dark focus:ring-brand"
+        className={`h-13 rounded-2xl bg-white px-4 text-base text-ink ring-1 ring-inset placeholder:text-muted/60 focus:outline-none ${
+          error ? "ring-red-500" : "ring-line focus:ring-brand"
         }`}
       />
       {error ? (
-        <span role="alert" className="text-sm text-red-300">
+        <span role="alert" className="text-sm text-red-600">
           {error}
         </span>
       ) : null}
@@ -260,9 +260,9 @@ function DirectLink({
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex h-11 items-center gap-2 rounded-full bg-white/8 px-4 text-sm font-medium text-white ring-1 ring-white/12 ring-inset transition-colors hover:bg-white/14"
+        className="inline-flex h-11 items-center gap-2 rounded-full bg-paper px-4 text-sm font-medium text-ink transition-colors hover:bg-brand-tint hover:text-brand-dark"
       >
-        <Icon className="size-4 text-brand-light" />
+        <Icon className="size-4 text-brand" />
         {children}
       </a>
     </li>

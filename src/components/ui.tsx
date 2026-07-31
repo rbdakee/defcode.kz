@@ -16,49 +16,40 @@ export function Container({
 }
 
 /**
- * Тон секции-пузыря. Фон страницы всегда белый, а секции лежат на нём
- * скруглёнными панелями: paper — рабочая светлая, night — тёмная (кейсы,
- * форма), brand — фиолетовая (призыв). none — без панели: белая секция
- * на белом фоне была бы невидимым пузырём, поэтому просто отступы.
+ * Секция — только вертикальный ритм на белом фоне. Подложек во всю
+ * ширину нет: пузырями работают карточки внутри, а заголовок секции
+ * стоит прямо на белом.
  */
-export type SectionTone = "paper" | "night" | "brand" | "none";
-
-const TONE_PANEL: Record<SectionTone, string> = {
-  paper: "bg-paper",
-  night: "bg-night text-white",
-  brand: "bg-linear-to-br from-brand to-brand-dark text-white",
-  none: "",
-};
-
 export function Section({
   id,
   children,
   className = "",
-  panelClassName = "",
-  tone = "paper",
 }: {
   id?: string;
   children: ReactNode;
   className?: string;
-  /** Классы самой панели — для overflow-hidden, relative и подобного. */
-  panelClassName?: string;
-  tone?: SectionTone;
 }) {
-  const rounded = tone === "none" ? "" : "rounded-3xl lg:rounded-[2.5rem]";
-
   return (
-    /* Внешние отступы — «швы» между пузырями, сквозь них виден белый фон.
-       Панель сама выполняет роль Container: второй max-w внутри неё
-       удвоил бы горизонтальные поля. */
-    <section id={id} className={`px-2 py-2 sm:px-4 sm:py-2.5 lg:px-6 lg:py-3 ${className}`}>
-      <div
-        className={`mx-auto w-full max-w-7xl px-4 py-14 sm:px-8 sm:py-16 lg:px-12 lg:py-20 ${rounded} ${TONE_PANEL[tone]} ${panelClassName}`}
-      >
-        {children}
-      </div>
+    <section id={id} className={`py-10 sm:py-12 lg:py-14 ${className}`}>
+      <Container>{children}</Container>
     </section>
   );
 }
+
+/**
+ * Пузырь — карточка со светло-серой заливкой на белом фоне. Рамки нет
+ * намеренно: форму держит цвет, линия дала бы ту же границу дважды.
+ */
+export const bubble = "rounded-card bg-paper";
+
+/**
+ * Кликабельный пузырь. При наведении всплывает: заливка уходит в белый,
+ * а тень отрывает карточку от фона. Подсвечивать его тоном бренда нельзя —
+ * теги внутри залиты ровно этим тоном и растворились бы в подложке.
+ */
+export const bubbleLink =
+  `${bubble} transition-[background-color,box-shadow] duration-200 ` +
+  "hover:bg-white hover:shadow-[0_18px_44px_-26px_rgba(14,14,49,0.35)]";
 
 /**
  * Шапка секции. Если передана ссылка «смотреть всё», на десктопе она
@@ -68,12 +59,10 @@ export function Section({
 export function SectionHead({
   title,
   sub,
-  dark = false,
   more,
 }: {
   title: string;
   sub?: string;
-  dark?: boolean;
   more?: { href: string; label: string };
 }) {
   return (
@@ -86,25 +75,17 @@ export function SectionHead({
       }
     >
       <div className="max-w-3xl">
-        <h2
-          className={`text-3xl leading-[1.1] font-semibold tracking-tight text-balance sm:text-4xl lg:text-5xl ${
-            dark ? "text-white" : "text-ink"
-          }`}
-        >
+        <h2 className="text-3xl leading-[1.1] font-semibold tracking-tight text-balance text-ink sm:text-4xl lg:text-5xl">
           {title}
         </h2>
         {sub ? (
-          <p
-            className={`mt-4 text-base leading-relaxed text-pretty sm:text-lg ${
-              dark ? "text-muted-dark" : "text-muted"
-            }`}
-          >
+          <p className="mt-4 text-base leading-relaxed text-pretty text-muted sm:text-lg">
             {sub}
           </p>
         ) : null}
       </div>
 
-      {more ? <MoreLink href={more.href} dark={dark} label={more.label} /> : null}
+      {more ? <MoreLink href={more.href} label={more.label} /> : null}
     </div>
   );
 }
@@ -113,20 +94,16 @@ export function SectionHead({
 export function MoreLink({
   href,
   label,
-  dark = false,
   className = "",
 }: {
   href: string;
   label: string;
-  dark?: boolean;
   className?: string;
 }) {
   return (
     <Link
       href={href}
-      className={`group inline-flex shrink-0 items-center gap-2 text-sm font-semibold transition-colors sm:text-base ${
-        dark ? "text-brand-light hover:text-white" : "text-brand hover:text-brand-dark"
-      } ${className}`}
+      className={`group inline-flex shrink-0 items-center gap-2 text-sm font-semibold text-brand transition-colors hover:text-brand-dark sm:text-base ${className}`}
     >
       {label}
       <ArrowRight className="transition-transform duration-200 group-hover:translate-x-1" />
@@ -134,21 +111,9 @@ export function MoreLink({
   );
 }
 
-export function Pill({
-  children,
-  dark = false,
-}: {
-  children: ReactNode;
-  dark?: boolean;
-}) {
+export function Pill({ children }: { children: ReactNode }) {
   return (
-    <span
-      className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium sm:text-[13px] ${
-        dark
-          ? "bg-white/8 text-muted-dark ring-1 ring-white/10 ring-inset"
-          : "bg-brand-tint text-brand-dark"
-      }`}
-    >
+    <span className="inline-flex items-center rounded-full bg-brand-tint px-3 py-1 text-xs font-medium text-brand-dark sm:text-[13px]">
       {children}
     </span>
   );

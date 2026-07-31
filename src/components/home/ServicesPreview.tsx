@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Reveal from "../Reveal";
-import { ArrowRight, Pill, Section, SectionHead } from "../ui";
+import { ArrowRight, bubbleLink, Pill, Section, SectionHead } from "../ui";
 import { IconTile, SERVICE_ICONS } from "../icons";
 import { routeHref } from "@/lib/routes";
 import type { Locale } from "@/i18n/config";
@@ -34,7 +34,7 @@ export default function ServicesPreview({
           <Reveal key={service.title} delay={(i % 3) * 70}>
             <Link
               href={routeHref(locale, "services")}
-              className="group flex h-full flex-col rounded-card border border-line bg-white p-6 transition-colors hover:border-brand"
+              className={`group flex h-full flex-col ${bubbleLink} p-6`}
             >
               <div className="flex items-start justify-between gap-4">
                 <IconTile icon={SERVICE_ICONS[i]} />

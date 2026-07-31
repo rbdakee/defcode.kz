@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Reveal from "./Reveal";
-import { ArrowRight, Section, SectionHead } from "./ui";
+import { ArrowRight, bubbleLink, Section, SectionHead } from "./ui";
 import { HOOK_ICONS, IconTile } from "./icons";
 import { routeHref, type RouteKey } from "@/lib/routes";
 import type { Locale } from "@/i18n/config";
@@ -23,7 +23,7 @@ export default function Hooks({ dict, locale }: { dict: Dict; locale: Locale }) 
           <Reveal key={item.quote} delay={i * 70}>
             <Link
               href={routeHref(locale, TARGETS[i])}
-              className="group flex h-full flex-col rounded-card border border-line bg-white p-6 transition-colors hover:border-brand sm:p-7"
+              className={`group flex h-full flex-col ${bubbleLink} p-6 sm:p-7`}
             >
               <IconTile icon={HOOK_ICONS[i]} />
               <p className="mt-5 text-lg font-semibold text-balance text-ink sm:text-xl">
