@@ -1,26 +1,150 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ---------------------------------------------------------------
+   Токены бренда. Цвета сняты пипеткой с логотипа — см. /brand.
+   --------------------------------------------------------------- */
+@theme {
+  --color-brand: #653bd1;
+  --color-brand-dark: #5430b3;
+  --color-brand-light: #8163e0;
+  --color-brand-tint: #efeafb;
+  --color-brand-tint-2: #e0d8f7;
+
+  --color-ink: #0e0e31;
+  --color-night: #0b0c2f;
+  --color-night-2: #14153f;
+  --color-paper: #f6f6f8;
+  --color-muted: #5c5c78;
+  --color-muted-dark: #a3a2bd;
+  --color-line: #e3e1ed;
+  --color-line-dark: #262754;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono-brand), ui-monospace, monospace;
+
+  --radius-card: 1.25rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ---------------------------------------------------------------
+   База
+   --------------------------------------------------------------- */
+html {
+  scroll-behavior: smooth;
+  /* чтобы якорь не уезжал под липкую шапку */
+  scroll-padding-top: 5rem;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  /* гасит горизонтальный сдвиг от декоративных пятен на мобильном */
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--color-brand);
+  color: #fff;
+}
+
+/* Видимый фокус для клавиатуры, но не для мыши */
+:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ---------------------------------------------------------------
+   Появление секций при скролле.
+   Только opacity/transform — они считаются на GPU и не вызывают
+   пересчёт макета, поэтому не дёргаются на слабых Android.
+   --------------------------------------------------------------- */
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  transition:
+    opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal[data-shown="true"] {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Ротация строк в hero */
+@keyframes rotate-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.45em, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.rotate-word {
+  animation: rotate-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Мягкое свечение под hero */
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(0, -14px, 0) scale(1.06);
+  }
+}
+
+.drift {
+  animation: drift 11s ease-in-out infinite;
+}
+
+/* Бегущая строка стека */
+@keyframes marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.marquee-track {
+  animation: marquee 34s linear infinite;
+  will-change: transform;
+}
+
+@media (hover: hover) {
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Уважаем системную настройку «уменьшить движение».
+   Скрытое становится сразу видимым, а не остаётся невидимым навсегда.
+   --------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
 }

@@ -1,36 +1,127 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Defcode — сайт
 
-## Getting Started
+Next.js 16 (App Router) · TypeScript · Tailwind CSS 4 · три языка: RU / KK / EN
 
-First, run the development server:
+## Запуск
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local   # заполнить переменные, см. ниже
+npm run dev                  # http://localhost:3000 → редирект на /ru
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Сборка и проверки:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run build
+npm run lint
+npx tsc --noEmit
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Карта сайта
 
-## Learn More
+Главная — витрина: каждый блок показывает, что раздел есть, и уводит внутрь.
+Подробности живут на своих адресах, чтобы их можно было индексировать,
+скидывать в переписке и вести на них рекламу по отдельности.
 
-To learn more about Next.js, take a look at the following resources:
+| Адрес | Что внутри |
+|---|---|
+| `/{lang}` | Hero · хуки · витрина услуг · три кейса · пять шагов · призыв |
+| `/{lang}/services` | Шесть направлений + полный список задач тегами |
+| `/{lang}/cases` | Все кейсы |
+| `/{lang}/process` | Пять шагов подробно + стек |
+| `/{lang}/about` | Гарантии и FAQ |
+| `/{lang}/contacts` | Форма заявки и прямые контакты |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+18 страниц (6 разделов × 3 языка) пререндерятся на этапе сборки.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Форма одна и только на `/contacts`.** Все кнопки «Обсудить задачу» ведут туда же:
+так заявка не приходит «непонятно откуда», а разделы не соревнуются за конверсию.
 
-## Deploy on Vercel
+## Что заполнить перед запуском в продакшн
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Всё незаполненное помечено `null` и `TODO`. Компоненты такие блоки
+**молча скрывают** — на сайт не попадёт ни заглушка, ни выдуманная цифра.
+Как заполните, блок появится сам, вёрстку править не нужно.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Файл | Что там |
+|---|---|
+| [src/content/company.ts](src/content/company.ts) | Контакты, город, юрлицо, цифры для hero |
+| [src/content/stack.ts](src/content/stack.ts) | Список технологий |
+| [src/i18n/dictionaries/ru.ts](src/i18n/dictionaries/ru.ts) | Весь русский текст, включая кейсы |
+| [.env.example](.env.example) | Токен Telegram-бота для приёма заявок |
+
+Без `TELEGRAM_BOT_TOKEN` и `TELEGRAM_CHAT_ID` форма покажет посетителю ошибку
+и предложит написать в мессенджер. Заявка при этом не пропадёт молча —
+она попадёт в лог сервера.
+
+## Как устроено
+
+```
+src/
+├── app/
+│   ├── [locale]/          макет (шапка, подвал, JSON-LD) и страницы разделов
+│   └── api/lead/          приём заявки → Telegram
+├── components/
+│   └── home/              витрины разделов на главной
+├── content/               факты о компании (заполняете вы)
+├── i18n/dictionaries/     ru / kk / en — весь текст
+├── lib/                   маршруты, метаданные, подстановка задачи в форму
+└── proxy.ts               редирект / → /ru по языку браузера
+```
+
+**Словари типизированы от русского.** Если добавить секцию в `ru.ts`,
+TypeScript не даст собрать проект, пока её не переведут в `kk.ts` и `en.ts` —
+забыть перевести кусок физически невозможно.
+
+**Шапка и подвал живут в макете**, а не на страницах: при переходах между
+разделами они не перерисовываются.
+
+## Решения, которые стоит знать при доработке
+
+**Никакой нумерации секций вида `{ 01 }`** и надзаголовков-подписей в скобках.
+Это узнаваемый штамп генеративных лендингов: смысла не добавляет, шаблон выдаёт.
+Номера остались только там, где несут порядок, — шаги процесса, обычными цифрами.
+
+**Ничего не обещаем показать из чужих проектов.** Был блок «на созвоне покажем
+интерфейсы и код» — он стоял ровно там, где мы обещаем клиенту неразглашение,
+и читался как «ваши данные покажут точно так же». Про отсутствие скриншотов
+отвечаем один раз в FAQ и без обещаний.
+
+**Отзывов нет сознательно.** Настоящих собрать не вышло, а выдуманные цитаты
+в B2B видно сразу — они бьют по доверию сильнее, чем их отсутствие.
+
+**Mobile-first.** Базовые классы описывают телефон, десктоп добавляется
+брейкпоинтами. Не наоборот.
+
+**Кегль заголовка в hero.** Подобран замером: самая длинная фраза ротации
+занимает 11.9 × кегля. Отсюда потолки — 23.5px на экране 320, 26.9 на 360,
+30.2 на 400. Если добавить в `hero.rotating` фразу длиннее существующих,
+она перенесётся на две строки, а контейнер зарезервирует их высоту навсегда,
+и под короткими вариантами появится пустая строка. Следите за длиной.
+
+**Анимации только `transform` и `opacity`.** Они считаются на GPU и не вызывают
+пересчёт макета, поэтому не дёргаются на слабых Android. Плюс везде уважается
+системная настройка «уменьшить движение».
+
+**Моноширинный шрифт — Noto Sans Mono, а не JetBrains Mono.** У JetBrains Mono
+нет казахских ә ғ қ ң ө ұ ү һ: браузер подставлял запасной шрифт, и буквы
+выбивались по ширине прямо в подписях. Будете менять шрифт — проверьте,
+что все буквы имеют одинаковую ширину.
+
+**Мега-меню — надстройка для мыши.** Пункт «Услуги» это обычная ссылка
+на `/services`, а панель раскрывается по наведению. Всё её содержимое есть
+на самой странице, поэтому с клавиатуры и с телефона панель не нужна:
+там работают ссылка и аккордеон в бургере.
+
+**Клик по задаче в меню** уводит на `/contacts` и подставляет её в поле
+«о задаче» — дописать проще, чем начать с пустого поля. Значение переживает
+переход в `sessionStorage`: query-параметр сделал бы страницу динамической.
+
+**Логотипы.** Исходники в `brand/` с залитым фоном. В `public/brand` лежат
+обработанные версии: фон снят, поля обрезаны, светлая и тёмная.
+
+## Деплой
+
+Vercel: подключить репозиторий, добавить переменные окружения из `.env.example`,
+привязать домен. Все языковые версии пререндерятся заранее.
