@@ -68,13 +68,21 @@ export default function Header({ dict, locale }: Props) {
     return () => document.removeEventListener("pointerdown", onDown);
   }, [openDrop]);
 
-  /* Пока открыта мобильная панель, страница под ней не должна прокручиваться. */
+  /* Пока открыта мобильная панель, страница под ней не должна прокручиваться.
+
+     Замок висит на html, а не на body, и это важно. Браузер отдаёт прокрутку
+     вьюпорту только пока у html overflow: visible — а у нас там overflow-x:
+     clip, который держит страницу от съезда вбок. С ним body с overflow:
+     hidden становится собственным скролл-контейнером, и sticky-шапка внутри
+     начинает липнуть к нему вместо экрана: при открытии меню на прокрученной
+     странице она уезжала вверх, а на её месте просвечивал контент. */
   useEffect(() => {
     if (!mobileOpen) return;
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const root = document.documentElement;
+    const previous = root.style.overflow;
+    root.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = previous;
+      root.style.overflow = previous;
     };
   }, [mobileOpen]);
 
@@ -128,8 +136,11 @@ export default function Header({ dict, locale }: Props) {
     <>
       <header
         ref={headerRef}
+        /* При открытом меню шапка глухо белая: полупрозрачный фон
+           прокрученной страницы просвечивал бы контентом сквозь строку
+           с кнопкой закрытия, хотя под ней уже сплошная панель. */
         className={`sticky top-0 z-50 transition-shadow duration-300 ${
-          scrolled
+          scrolled && !mobileOpen
             ? "bg-white/85 shadow-[0_1px_0_0_var(--color-line)] backdrop-blur-md"
             : "bg-white"
         }`}
@@ -330,7 +341,17 @@ export default function Header({ dict, locale }: Props) {
         // содержимое не должно ловить фокус табом.
         inert={!mobileOpen}
       >
-        <Container className="pt-4 pb-28">
+        <Container className="pb-28">
+          {/* Язык — первой строкой. Раньше он лежал в самом низу, а под
+              шапкой оставалась пустая белая полоса: панель начинается сразу
+              под ней, и отступу там взяться неоткуда. Теперь эта полоса
+              занята делом, а меню начинается вплотную к кнопке закрытия. */}
+          <LocaleSwitch
+            locale={locale}
+            label={dict.nav.language}
+            className="my-3 inline-flex"
+          />
+
           <nav className="flex flex-col" aria-label="mobile">
             <Link
               href={routeHref(locale, "services")}
@@ -426,12 +447,6 @@ export default function Header({ dict, locale }: Props) {
             })}
           </div>
 
-          <div className="mt-8">
-            <p className="mb-2 font-mono text-xs tracking-widest text-brand uppercase">
-              {dict.nav.language}
-            </p>
-            <LocaleSwitch locale={locale} className="inline-flex" />
-          </div>
         </Container>
 
         {/* Кнопка всегда под большим пальцем, не надо мотать наверх. */}
@@ -558,9 +573,12 @@ function Chevron({ open }: { open: boolean }) {
 function LocaleSwitch({
   locale,
   className = "",
+  label,
 }: {
   locale: Locale;
   className?: string;
+  /** Подпись для скринридера. Нужна там, где рядом нет видимого заголовка. */
+  label?: string;
 }) {
   const pathname = usePathname();
 
@@ -575,6 +593,8 @@ function LocaleSwitch({
     /* display задаёт вызывающая сторона: если оставить его здесь,
        он конфликтует с `hidden` и переключатель не прячется на мобильном. */
     <div
+      role={label ? "group" : undefined}
+      aria-label={label}
       className={`items-center gap-0.5 rounded-full bg-paper p-0.5 ring-1 ring-line ring-inset ${className}`}
     >
       {locales.map((code) => {

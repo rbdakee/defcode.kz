@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { locales, localeTags } from "@/i18n/config";
+import { defaultLocale, locales, localeTags } from "@/i18n/config";
 import { routeKeys } from "@/lib/routes";
 import { siteUrl } from "@/lib/seo";
 
@@ -12,8 +12,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${siteUrl}/${locale}${path}`,
       lastModified: new Date(),
       changeFrequency: "monthly" as const,
-      // Главная русской версии — основная точка входа, остальное ниже.
-      priority: path === "" ? (locale === "ru" ? 1 : 0.8) : 0.7,
+      // Главная на языке по умолчанию — основная точка входа, остальное ниже.
+      priority: path === "" ? (locale === defaultLocale ? 1 : 0.8) : 0.7,
       alternates: {
         languages: Object.fromEntries(
           locales.map((l) => [localeTags[l], `${siteUrl}/${l}${path}`]),

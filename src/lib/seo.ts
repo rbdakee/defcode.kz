@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { locales, localeTags, type Locale } from "@/i18n/config";
+import { defaultLocale, locales, localeTags, type Locale } from "@/i18n/config";
 import { company } from "@/content/company";
 
 export const siteUrl =
@@ -42,7 +42,9 @@ export function pageMetadata({
       canonical: urlFor(locale),
       languages: {
         ...Object.fromEntries(locales.map((l) => [localeTags[l], urlFor(l)])),
-        "x-default": urlFor("ru"),
+        // Куда вести тех, чей язык не подошёл ни под один hreflang —
+        // тот же ответ, что даёт редирект с общего адреса.
+        "x-default": urlFor(defaultLocale),
       },
     },
     openGraph: {

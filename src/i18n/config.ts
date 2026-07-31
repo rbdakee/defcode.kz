@@ -2,7 +2,13 @@ export const locales = ["ru", "kk", "en"] as const;
 
 export type Locale = (typeof locales)[number];
 
-export const defaultLocale: Locale = "ru";
+/**
+ * Язык, на который попадает посетитель, если по его браузеру ничего
+ * подобрать не удалось: общий адрес сайта открывается казахским.
+ * От этой константы зависят и x-default в hreflang, и приоритет главной
+ * в sitemap — менять её достаточно здесь.
+ */
+export const defaultLocale: Locale = "kk";
 
 /** Подписи в переключателе языка. Каждый язык подписан сам собой. */
 export const localeNames: Record<Locale, string> = {

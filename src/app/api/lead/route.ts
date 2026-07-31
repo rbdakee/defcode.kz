@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { defaultLocale } from "@/i18n/config";
 import { sendTelegramMessage } from "@/lib/telegram";
 
 /**
@@ -75,7 +76,7 @@ export async function POST(request: Request) {
   const name = clamp(body.name, 120);
   const contact = clamp(body.contact, 200);
   const task = clamp(body.task, 4000);
-  const locale = clamp(body.locale, 10) || "ru";
+  const locale = clamp(body.locale, 10) || defaultLocale;
 
   if (!name || !contact) {
     return NextResponse.json({ error: "missing_fields" }, { status: 400 });

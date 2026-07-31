@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import { getDict } from "@/i18n";
-import { isLocale, locales } from "@/i18n/config";
+import { defaultLocale, isLocale, locales } from "@/i18n/config";
 import { company } from "@/content/company";
 
 /**
@@ -27,7 +27,7 @@ export default async function Image({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const dict = getDict(isLocale(locale) ? locale : "ru");
+  const dict = getDict(isLocale(locale) ? locale : defaultLocale);
 
   return new ImageResponse(
     (
