@@ -34,6 +34,20 @@ html {
   scroll-padding-top: 5rem;
 }
 
+/* Страница не должна ездить вбок ни на пиксель.
+   Один только body здесь не спасает: мобильный Chrome, увидев вылет за
+   край, расширяет сам layout viewport (window.innerWidth становится
+   больше экрана) — и вместе с ним разъезжаются fixed-элементы, включая
+   мобильное меню. Поэтому запрет висит и на html.
+   clip вместо hidden: он не делает страницу скролл-контейнером, поэтому
+   не ломает position: sticky у шапки. hidden оставлен строкой выше как
+   запасной вариант для Safari до 16. */
+html,
+body {
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
 body {
   /* Фон белый по всей странице и ничем не перекрывается: подложек во всю
      ширину нет, paper — цвет только самих карточек-пузырей. */
@@ -41,8 +55,6 @@ body {
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
-  /* гасит горизонтальный сдвиг от декоративных пятен на мобильном */
-  overflow-x: hidden;
 }
 
 ::selection {

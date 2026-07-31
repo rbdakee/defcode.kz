@@ -43,14 +43,16 @@ export default function Hero({ dict, locale }: { dict: Dict; locale: Locale }) {
   ].filter((s): s is { value: string; label: string } => Boolean(s.value));
 
   return (
-    <section className="relative pt-12 pb-16 sm:pt-16 sm:pb-20 lg:pt-24 lg:pb-28">
+    <section className="relative overflow-x-clip pt-12 pb-16 sm:pt-16 sm:pb-20 lg:pt-24 lg:pb-28">
       {/* Декор: мягкое свечение бренда. pointer-events-none, чтобы
           не перехватывать нажатия на мобильном.
 
-          Обрезки по границе секции быть не должно: пятно висит на белом
-          и любой срез читается как прямоугольная заплатка. Поэтому здесь
-          нет overflow-hidden — пятно гаснет само, а горизонтальный сдвиг
-          снимает overflow-x у body. */}
+          Секция режет декор только по горизонтали (overflow-x-clip): её
+          края совпадают с краями экрана, поэтому среза не видно, зато
+          пятна не расширяют страницу и мобильный не ездит вбок. Именно
+          clip, а не hidden: hidden по одной оси заставил бы вторую стать
+          скроллом и обрезал бы пятна сверху и снизу — вот там срез на
+          белом читался бы прямоугольной заплаткой. */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
         <div className="drift absolute -top-32 -right-24 size-[28rem] bg-radial from-brand/15 to-transparent to-70% sm:size-[36rem]" />
         <div className="drift absolute -bottom-40 -left-32 size-[22rem] bg-radial from-brand-light/13 to-transparent to-70% [animation-delay:-5s] sm:size-[30rem]" />

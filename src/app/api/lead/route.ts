@@ -1,8 +1,16 @@
 import { NextResponse } from "next/server";
 
-/** Заявка уходит в Telegram-чат — отдельный сервис для этого не нужен. */
+import { sendTelegramMessage } from "@/lib/telegram";
+
+/**
+ * Заявка уходит в Telegram — отдельный сервис для этого не нужен.
+ * TELEGRAM_CHAT_ID можно задать числом или тегом вида @rbdakee,
+ * подробности и условия — в src/lib/telegram.ts.
+ */
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+/** Только для групп с топиками: номер темы, в которую складывать заявки. */
+const TOPIC_ID = process.env.TELEGRAM_TOPIC_ID;
 
 const MAX_PER_WINDOW = 5;
 const WINDOW_MS = 10 * 60 * 1000;
@@ -95,25 +103,16 @@ export async function POST(request: Request) {
     .filter(Boolean)
     .join("\n");
 
-  try {
-    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: CHAT_ID,
-        text,
-        parse_mode: "HTML",
-        disable_web_page_preview: true,
-      }),
-    });
+  const sent = await sendTelegramMessage(BOT_TOKEN, CHAT_ID, text, TOPIC_ID);
 
-    if (!res.ok) {
-      console.error("[lead] Telegram ответил ошибкой:", res.status, await res.text());
-      return NextResponse.json({ error: "telegram_failed" }, { status: 502 });
-    }
-  } catch (error) {
-    console.error("[lead] Не удалось достучаться до Telegram:", error);
-    return NextResponse.json({ error: "telegram_unreachable" }, { status: 502 });
+  if (!sent.ok) {
+    // Тихо терять заявку нельзя: причина уже в логе, дублируем саму заявку,
+    // чтобы её можно было достать оттуда руками.
+    console.error("[lead] Заявка не отправлена:", { name, contact, task, locale });
+    return NextResponse.json(
+      { error: sent.reason === "unreachable" ? "telegram_unreachable" : "telegram_failed" },
+      { status: 502 },
+    );
   }
 
   return NextResponse.json({ ok: true });

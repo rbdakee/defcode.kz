@@ -89,9 +89,8 @@ export default function Footer({ dict, locale }: { dict: Dict; locale: Locale })
         </div>
 
         <div className="mt-8 flex flex-col gap-1.5 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
-          {/* В копирайте стоит юрлицо, а не бренд: у ИП они называются
-              одинаково, и «Defcode · ИП Defcode» читалось бы как заикание.
-              Бренд и так стоит логотипом строкой выше. */}
+          {/* В копирайте — только бренд. Организационно-правовую форму
+              не показываем: в подписи она ничего не добавляет. */}
           <p>
             © {year} {company.legalName ?? company.name}
             {company.bin ? ` · БИН ${company.bin}` : ""}
