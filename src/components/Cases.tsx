@@ -1,5 +1,6 @@
 import Reveal from "./Reveal";
 import { bubble, Pill, Section } from "./ui";
+import { itemAnchor } from "@/lib/routes";
 import type { Dict } from "@/i18n";
 
 export default function Cases({ dict }: { dict: Dict }) {
@@ -10,7 +11,12 @@ export default function Cases({ dict }: { dict: Dict }) {
       <div className="grid gap-4 lg:grid-cols-2">
         {cases.items.map((item, i) => (
           <Reveal key={item.industry} delay={(i % 2) * 70}>
-            <article className={`flex h-full flex-col ${bubble} p-6 sm:p-8`}>
+            {/* Якорь — цель ссылки из выпадающего меню в шапке.
+                Отступ под липкую шапку задаёт scroll-padding-top у html. */}
+            <article
+              id={itemAnchor("case", i)}
+              className={`flex h-full flex-col ${bubble} p-6 sm:p-8`}
+            >
               <header className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                 <h2 className="text-xl font-semibold text-ink sm:text-2xl">
                   {item.industry}

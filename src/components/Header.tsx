@@ -7,18 +7,25 @@ import Logo from "./Logo";
 import { ArrowRight, Container } from "./ui";
 import { MEGA_GROUP_ICONS } from "./icons";
 import { stashPrefill } from "@/lib/prefill";
-import { activeRoute, routeHref, type RouteKey } from "@/lib/routes";
+import { activeRoute, itemAnchor, routeHref, type RouteKey } from "@/lib/routes";
 import { locales, localeNames, type Locale } from "@/i18n/config";
 import type { Dict } from "@/i18n";
 
 type Props = { dict: Dict; locale: Locale };
+
+/**
+ * Разделы, у которых на десктопе есть выпадающее меню. «О компании»
+ * его не получает намеренно: там нечего перечислять, кроме двух якорей,
+ * а панель на две строки выглядит как недоразумение.
+ */
+type DropKey = "services" | "cases" | "process";
 
 export default function Header({ dict, locale }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const current = activeRoute(pathname);
 
-  const [megaOpen, setMegaOpen] = useState(false);
+  const [openDrop, setOpenDrop] = useState<DropKey | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [openGroup, setOpenGroup] = useState<number | null>(0);
@@ -39,27 +46,27 @@ export default function Header({ dict, locale }: Props) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  /* Escape закрывает и мега-меню, и мобильную панель. */
+  /* Escape закрывает и выпадающие меню, и мобильную панель. */
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
-      setMegaOpen(false);
+      setOpenDrop(null);
       setMobileOpen(false);
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, []);
 
-  /* Клик мимо шапки закрывает мега-меню. */
+  /* Клик мимо шапки закрывает выпадающее меню. */
   useEffect(() => {
-    if (!megaOpen) return;
+    if (!openDrop) return;
     const onDown = (e: PointerEvent) => {
       if (headerRef.current?.contains(e.target as Node)) return;
-      setMegaOpen(false);
+      setOpenDrop(null);
     };
     document.addEventListener("pointerdown", onDown);
     return () => document.removeEventListener("pointerdown", onDown);
-  }, [megaOpen]);
+  }, [openDrop]);
 
   /* Пока открыта мобильная панель, страница под ней не должна прокручиваться. */
   useEffect(() => {
@@ -84,7 +91,7 @@ export default function Header({ dict, locale }: Props) {
   }, []);
 
   const closeAll = useCallback(() => {
-    setMegaOpen(false);
+    setOpenDrop(null);
     setMobileOpen(false);
   }, []);
 
@@ -101,15 +108,15 @@ export default function Header({ dict, locale }: Props) {
 
   /* Наведение открывает панель, увод — закрывает. Задержка нужна,
      чтобы панель не захлопывалась, пока курсор перебирается на неё с пункта
-     меню. Сам пункт остаётся ссылкой: клик уводит на страницу услуг. */
-  const openMega = () => {
+     меню. Сам пункт остаётся ссылкой: клик уводит на страницу раздела. */
+  const openDropdown = (key: DropKey) => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
-    setMegaOpen(true);
+    setOpenDrop(key);
   };
 
-  const closeMega = () => {
+  const closeDropdown = () => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
-    closeTimer.current = setTimeout(() => setMegaOpen(false), 140);
+    closeTimer.current = setTimeout(() => setOpenDrop(null), 140);
   };
 
   const linkClass = (active: boolean) =>
@@ -145,13 +152,21 @@ export default function Header({ dict, locale }: Props) {
               <Logo priority className="h-6 w-auto sm:h-7" />
             </Link>
 
-            {/* --- Десктопная навигация --- */}
+            {/* --- Десктопная навигация ---
+
+                Панели — надстройка для мыши: их содержимое целиком есть
+                на странице раздела, куда ведёт сам пункт меню. Поэтому
+                ни aria-expanded, ни доступа с клавиатуры им не нужно —
+                иначе получилось бы состояние, в которое нельзя попасть табом.
+                На телефоне панелей нет по той же причине: там работают
+                ссылка и аккордеон задач. */}
             <nav className="hidden items-center gap-1 lg:flex" aria-label="main">
-              {/* Панель — надстройка для мыши: её содержимое целиком есть
-                  на странице услуг, куда ведёт сам пункт меню. Поэтому
-                  ни aria-expanded, ни доступа с клавиатуры ей не нужно —
-                  иначе получилось бы состояние, в которое нельзя попасть табом. */}
-              <div onMouseEnter={openMega} onMouseLeave={closeMega}>
+              {/* Услуги — единственная панель во всю ширину шапки, поэтому
+                  она лежит отдельным блоком ниже, а не внутри пункта. */}
+              <div
+                onMouseEnter={() => openDropdown("services")}
+                onMouseLeave={closeDropdown}
+              >
                 <Link
                   href={routeHref(locale, "services")}
                   onClick={closeAll}
@@ -159,34 +174,48 @@ export default function Header({ dict, locale }: Props) {
                   className={`flex items-center gap-1.5 ${linkClass(current === "services")}`}
                 >
                   {dict.nav.services}
-                  <svg
-                    viewBox="0 0 12 12"
-                    aria-hidden="true"
-                    className={`size-3 transition-transform duration-200 ${megaOpen ? "rotate-180" : ""}`}
-                  >
-                    <path
-                      d="M2.5 4.5 6 8l3.5-3.5"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <Chevron open={openDrop === "services"} />
                 </Link>
               </div>
 
-              {nav.map((item) => (
-                <Link
-                  key={item.key}
-                  href={routeHref(locale, item.key)}
-                  onClick={closeAll}
-                  aria-current={current === item.key ? "page" : undefined}
-                  className={linkClass(current === item.key)}
-                >
-                  {item.label}
-                </Link>
-              ))}
+              <NavDropdown
+                label={dict.nav.cases}
+                href={routeHref(locale, "cases")}
+                active={current === "cases"}
+                open={openDrop === "cases"}
+                onOpen={() => openDropdown("cases")}
+                onClose={closeDropdown}
+                onNavigate={closeAll}
+                items={dict.cases.items.map((item, i) => ({
+                  href: `${routeHref(locale, "cases")}#${itemAnchor("case", i)}`,
+                  title: item.industry,
+                  note: item.scale,
+                }))}
+              />
+
+              <NavDropdown
+                label={dict.nav.process}
+                href={routeHref(locale, "process")}
+                active={current === "process"}
+                open={openDrop === "process"}
+                onOpen={() => openDropdown("process")}
+                onClose={closeDropdown}
+                onNavigate={closeAll}
+                items={dict.process.steps.map((step, i) => ({
+                  href: `${routeHref(locale, "process")}#${itemAnchor("step", i)}`,
+                  title: step.title,
+                  index: i + 1,
+                }))}
+              />
+
+              <Link
+                href={routeHref(locale, "about")}
+                onClick={closeAll}
+                aria-current={current === "about" ? "page" : undefined}
+                className={linkClass(current === "about")}
+              >
+                {dict.nav.about}
+              </Link>
             </nav>
 
             <div className="flex items-center gap-2 sm:gap-3">
@@ -214,18 +243,18 @@ export default function Header({ dict, locale }: Props) {
           </div>
         </Container>
 
-        {/* --- Мега-меню (десктоп) --- */}
+        {/* --- Мега-меню услуг (десктоп) --- */}
         <div
           id="mega-menu"
-          onMouseEnter={openMega}
-          onMouseLeave={closeMega}
+          onMouseEnter={() => openDropdown("services")}
+          onMouseLeave={closeDropdown}
           className={`absolute inset-x-0 top-full hidden origin-top transition duration-200 lg:block ${
-            megaOpen
+            openDrop === "services"
               ? "pointer-events-auto scale-100 opacity-100"
               : "pointer-events-none -translate-y-1 scale-[0.99] opacity-0"
           }`}
-          aria-hidden={!megaOpen}
-          inert={!megaOpen}
+          aria-hidden={openDrop !== "services"}
+          inert={openDrop !== "services"}
         >
           <Container>
             <div className="mb-6 rounded-3xl border border-line bg-white p-6 shadow-[0_24px_60px_-24px_rgba(14,14,49,0.28)] xl:p-8">
@@ -422,6 +451,109 @@ export default function Header({ dict, locale }: Props) {
 }
 
 /* ------------------------------------------------------------------ */
+
+/**
+ * Узкая панель под пунктом меню — список того, что лежит в разделе.
+ * Каждая строка ведёт на свой якорь: без якорей все шесть строк
+ * привели бы в одно и то же место, и панель была бы декорацией.
+ */
+function NavDropdown({
+  label,
+  href,
+  active,
+  open,
+  onOpen,
+  onClose,
+  onNavigate,
+  items,
+}: {
+  label: string;
+  href: string;
+  active: boolean;
+  open: boolean;
+  onOpen: () => void;
+  onClose: () => void;
+  onNavigate: () => void;
+  items: { href: string; title: string; note?: string; index?: number }[];
+}) {
+  return (
+    <div className="relative" onMouseEnter={onOpen} onMouseLeave={onClose}>
+      <Link
+        href={href}
+        onClick={onNavigate}
+        aria-current={active ? "page" : undefined}
+        className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+          active ? "text-brand" : "text-ink hover:text-brand"
+        }`}
+      >
+        {label}
+        <Chevron open={open} />
+      </Link>
+
+      {/* pt-2 — не отступ, а мостик: с пустым зазором курсор по дороге
+          к панели покидает пункт меню и она захлопывается на полпути. */}
+      <div
+        className={`absolute top-full left-0 origin-top pt-2 transition duration-200 ${
+          open
+            ? "pointer-events-auto scale-100 opacity-100"
+            : "pointer-events-none -translate-y-1 scale-[0.99] opacity-0"
+        }`}
+        aria-hidden={!open}
+        inert={!open}
+      >
+        <ul className="w-max max-w-[22rem] min-w-56 rounded-2xl border border-line bg-white p-2 shadow-[0_24px_60px_-24px_rgba(14,14,49,0.28)]">
+          {items.map((item) => (
+            <li key={item.href}>
+              <Link
+                href={item.href}
+                onClick={onNavigate}
+                className="flex gap-2.5 rounded-xl px-3 py-2.5 transition-colors hover:bg-paper"
+              >
+                {item.index ? (
+                  <span
+                    aria-hidden="true"
+                    className="text-sm font-medium text-brand tabular-nums"
+                  >
+                    {item.index}
+                  </span>
+                ) : null}
+                <span>
+                  <span className="block text-sm font-medium text-ink">
+                    {item.title}
+                  </span>
+                  {item.note ? (
+                    <span className="mt-0.5 block font-mono text-xs text-muted">
+                      {item.note}
+                    </span>
+                  ) : null}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+function Chevron({ open }: { open: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 12 12"
+      aria-hidden="true"
+      className={`size-3 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+    >
+      <path
+        d="M2.5 4.5 6 8l3.5-3.5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
 function LocaleSwitch({
   locale,

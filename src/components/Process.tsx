@@ -1,5 +1,6 @@
 import Reveal from "./Reveal";
 import { bubble, Section } from "./ui";
+import { itemAnchor } from "@/lib/routes";
 import type { Dict } from "@/i18n";
 
 export default function Process({ dict }: { dict: Dict }) {
@@ -9,7 +10,8 @@ export default function Process({ dict }: { dict: Dict }) {
           заливка, поэтому список читается как лестница карточек. */}
       <ol className="grid gap-3 sm:gap-4">
         {dict.process.steps.map((step, i) => (
-          <li key={step.title}>
+          /* Якорь — цель ссылки из выпадающего меню в шапке. */
+          <li key={step.title} id={itemAnchor("step", i)}>
             <Reveal delay={i * 60}>
               <div
                 className={`grid gap-x-8 gap-y-2 ${bubble} p-6 sm:grid-cols-[3rem_1fr] sm:p-8`}

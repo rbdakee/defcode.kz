@@ -178,7 +178,7 @@ const en: Dict = {
 
   hooks: {
     heading: "What people come to us with",
-    sub: "Four situations we already know how to handle.",
+    sub: "Situations we already know how to handle.",
     items: [
       {
         quote: "I can't see what my team is actually doing",
@@ -304,11 +304,12 @@ const en: Dict = {
       {
         industry: "Online education",
         scale: "Programming school",
-        task: "They needed to test demand for new courses quickly and run ads for every intake.",
+        task: "The school needed a calling card online and a place to test its students and grade the results. It had neither.",
         solution:
-          "A series of landing pages for individual courses and intakes on a shared foundation — a new page can be assembled without rewriting everything.",
-        result: "A page for a new intake ships in days rather than weeks.",
-        tags: ["Landing pages", "Fast launch"],
+          "A landing page about the school plus a testing platform: a teacher puts together a test, a student takes it, and the school sees every result.",
+        result:
+          "The school now has a face online and its own way to check knowledge instead of doing it by hand. From the outside the work looks more professional.",
+        tags: ["Landing page", "Testing platform", "Result grading"],
       },
     ],
   },
