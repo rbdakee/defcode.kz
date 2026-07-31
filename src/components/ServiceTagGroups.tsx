@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Container, Section } from "./ui";
+import { Section } from "./ui";
+import { MEGA_GROUP_ICONS } from "./icons";
 import { stashPrefill } from "@/lib/prefill";
 import { routeHref } from "@/lib/routes";
 import type { Locale } from "@/i18n/config";
@@ -27,21 +28,25 @@ export default function ServiceTagGroups({
   };
 
   return (
-    <Section className="border-t border-line bg-white">
-      <Container>
-        <h2 className="text-2xl font-semibold tracking-tight text-balance text-ink sm:text-3xl">
-          {dict.services.tagsHeading}
-        </h2>
-        <p className="mt-3 text-[15px] text-muted sm:text-base">
-          {dict.services.tagsNote}
-        </p>
+    <Section tone="none">
+      <h2 className="text-2xl font-semibold tracking-tight text-balance text-ink sm:text-3xl">
+        {dict.services.tagsHeading}
+      </h2>
+      <p className="mt-3 text-[15px] text-muted sm:text-base">
+        {dict.services.tagsNote}
+      </p>
 
-        <div className="mt-10 grid gap-x-8 gap-y-9 sm:grid-cols-2 lg:grid-cols-3">
-          {dict.mega.groups.map((group) => (
+      <div className="mt-10 grid gap-x-8 gap-y-9 sm:grid-cols-2 lg:grid-cols-3">
+        {dict.mega.groups.map((group, i) => {
+          const Icon = MEGA_GROUP_ICONS[i];
+          return (
             <div key={group.title}>
-              <h3 className="flex items-center gap-2 text-sm font-semibold text-ink">
-                <span aria-hidden="true" className="font-mono text-brand">
-                  {"}"}
+              <h3 className="flex items-center gap-2.5 text-sm font-semibold text-ink">
+                <span
+                  aria-hidden="true"
+                  className="grid size-7 shrink-0 place-items-center rounded-lg bg-brand-tint text-brand"
+                >
+                  <Icon className="size-4" />
                 </span>
                 {group.title}
               </h3>
@@ -59,9 +64,9 @@ export default function ServiceTagGroups({
                 ))}
               </ul>
             </div>
-          ))}
-        </div>
-      </Container>
+          );
+        })}
+      </div>
     </Section>
   );
 }

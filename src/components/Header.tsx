@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Logo from "./Logo";
 import { ArrowRight, Container } from "./ui";
+import { MEGA_GROUP_ICONS } from "./icons";
 import { stashPrefill } from "@/lib/prefill";
 import { activeRoute, routeHref, type RouteKey } from "@/lib/routes";
 import { locales, localeNames, type Locale } from "@/i18n/config";
@@ -122,8 +123,8 @@ export default function Header({ dict, locale }: Props) {
         ref={headerRef}
         className={`sticky top-0 z-50 transition-shadow duration-300 ${
           scrolled
-            ? "bg-paper/85 shadow-[0_1px_0_0_var(--color-line)] backdrop-blur-md"
-            : "bg-paper"
+            ? "bg-white/85 shadow-[0_1px_0_0_var(--color-line)] backdrop-blur-md"
+            : "bg-white"
         }`}
       >
         <a
@@ -244,29 +245,35 @@ export default function Header({ dict, locale }: Props) {
               </div>
 
               <div className="grid grid-cols-2 gap-x-6 gap-y-7 xl:grid-cols-3">
-                {dict.mega.groups.map((group) => (
-                  <div key={group.title}>
-                    <p className="flex items-center gap-2 text-sm font-semibold text-ink">
-                      <span aria-hidden="true" className="font-mono text-brand">
-                        {"}"}
-                      </span>
-                      {group.title}
-                    </p>
-                    <ul className="mt-3 flex flex-wrap gap-1.5">
-                      {group.tags.map((tag) => (
-                        <li key={tag}>
-                          <button
-                            type="button"
-                            onClick={() => onTagClick(tag)}
-                            className="rounded-full bg-paper px-2.5 py-1 text-[13px] text-muted transition-colors hover:bg-brand-tint hover:text-brand-dark"
-                          >
-                            {tag}
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
+                {dict.mega.groups.map((group, i) => {
+                  const GroupIcon = MEGA_GROUP_ICONS[i];
+                  return (
+                    <div key={group.title}>
+                      <p className="flex items-center gap-2.5 text-sm font-semibold text-ink">
+                        <span
+                          aria-hidden="true"
+                          className="grid size-7 shrink-0 place-items-center rounded-lg bg-brand-tint text-brand"
+                        >
+                          <GroupIcon className="size-4" />
+                        </span>
+                        {group.title}
+                      </p>
+                      <ul className="mt-3 flex flex-wrap gap-1.5">
+                        {group.tags.map((tag) => (
+                          <li key={tag}>
+                            <button
+                              type="button"
+                              onClick={() => onTagClick(tag)}
+                              className="rounded-full bg-paper px-2.5 py-1 text-[13px] text-muted transition-colors hover:bg-brand-tint hover:text-brand-dark"
+                            >
+                              {tag}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </Container>
@@ -286,7 +293,7 @@ export default function Header({ dict, locale }: Props) {
           Тот же капкан ждёт любой transform, filter или will-change
           на шапке — если понадобятся, панель должна остаться снаружи. */}
       <div
-        className={`fixed inset-x-0 top-16 bottom-0 z-40 overflow-y-auto overscroll-contain bg-paper transition-opacity duration-200 lg:hidden ${
+        className={`fixed inset-x-0 top-16 bottom-0 z-40 overflow-y-auto overscroll-contain bg-white transition-opacity duration-200 lg:hidden ${
           mobileOpen ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
         aria-hidden={!mobileOpen}
@@ -329,6 +336,7 @@ export default function Header({ dict, locale }: Props) {
           <div className="divide-y divide-line border-y border-line">
             {dict.mega.groups.map((group, i) => {
               const open = openGroup === i;
+              const GroupIcon = MEGA_GROUP_ICONS[i];
               return (
                 <div key={group.title}>
                   <button
@@ -337,7 +345,15 @@ export default function Header({ dict, locale }: Props) {
                     aria-expanded={open}
                     className="flex w-full items-center justify-between gap-4 py-4 text-left"
                   >
-                    <span className="text-base font-medium text-ink">{group.title}</span>
+                    <span className="flex items-center gap-2.5 text-base font-medium text-ink">
+                      <span
+                        aria-hidden="true"
+                        className="grid size-7 shrink-0 place-items-center rounded-lg bg-brand-tint text-brand"
+                      >
+                        <GroupIcon className="size-4" />
+                      </span>
+                      {group.title}
+                    </span>
                     <span
                       aria-hidden="true"
                       className={`grid size-6 shrink-0 place-items-center rounded-full bg-brand-tint text-brand transition-transform duration-200 ${
@@ -367,7 +383,7 @@ export default function Header({ dict, locale }: Props) {
                             <button
                               type="button"
                               onClick={() => onTagClick(tag)}
-                              className="rounded-full bg-white px-3 py-1.5 text-sm text-muted ring-1 ring-line ring-inset"
+                              className="rounded-full bg-paper px-3 py-1.5 text-sm text-muted"
                             >
                               {tag}
                             </button>
@@ -390,7 +406,7 @@ export default function Header({ dict, locale }: Props) {
         </Container>
 
         {/* Кнопка всегда под большим пальцем, не надо мотать наверх. */}
-        <div className="fixed inset-x-0 bottom-0 border-t border-line bg-paper/95 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur">
+        <div className="fixed inset-x-0 bottom-0 border-t border-line bg-white/95 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur">
           <Link
             href={routeHref(locale, "contacts")}
             onClick={closeAll}
@@ -427,7 +443,7 @@ function LocaleSwitch({
     /* display задаёт вызывающая сторона: если оставить его здесь,
        он конфликтует с `hidden` и переключатель не прячется на мобильном. */
     <div
-      className={`items-center gap-0.5 rounded-full bg-white p-0.5 ring-1 ring-line ring-inset ${className}`}
+      className={`items-center gap-0.5 rounded-full bg-paper p-0.5 ring-1 ring-line ring-inset ${className}`}
     >
       {locales.map((code) => {
         const active = code === locale;

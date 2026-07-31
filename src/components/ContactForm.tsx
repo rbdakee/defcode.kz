@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Container } from "./ui";
+import { Section } from "./ui";
+import {
+  IconChat,
+  IconMail,
+  IconPhone,
+  IconSend,
+  type IconComponent,
+} from "./icons";
 import { takePrefill } from "@/lib/prefill";
 import {
   company,
@@ -73,9 +80,8 @@ export default function ContactForm({ dict }: { dict: Dict }) {
   }
 
   return (
-    <section id="contact" className="bg-night py-16 text-white sm:py-20 lg:py-28">
-      <Container>
-        <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
+    <Section id="contact" tone="night">
+      <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
           <div>
             <h1 className="text-3xl leading-[1.1] font-semibold tracking-tight text-balance sm:text-4xl lg:text-5xl">
               {t.heading}
@@ -91,16 +97,24 @@ export default function ContactForm({ dict }: { dict: Dict }) {
                 </p>
                 <ul className="mt-3 flex flex-wrap gap-2">
                   {whatsappHref ? (
-                    <DirectLink href={whatsappHref}>WhatsApp</DirectLink>
+                    <DirectLink href={whatsappHref} icon={IconChat}>
+                      WhatsApp
+                    </DirectLink>
                   ) : null}
                   {telegramHref ? (
-                    <DirectLink href={telegramHref}>Telegram</DirectLink>
+                    <DirectLink href={telegramHref} icon={IconSend}>
+                      Telegram
+                    </DirectLink>
                   ) : null}
                   {phoneHref ? (
-                    <DirectLink href={phoneHref}>{company.phone}</DirectLink>
+                    <DirectLink href={phoneHref} icon={IconPhone}>
+                      {company.phone}
+                    </DirectLink>
                   ) : null}
                   {emailHref ? (
-                    <DirectLink href={emailHref}>{company.email}</DirectLink>
+                    <DirectLink href={emailHref} icon={IconMail}>
+                      {company.email}
+                    </DirectLink>
                   ) : null}
                 </ul>
                 {company.workingHours ? (
@@ -188,10 +202,9 @@ export default function ContactForm({ dict }: { dict: Dict }) {
                 <p className="text-xs leading-relaxed text-muted-dark">{t.privacy}</p>
               </form>
             )}
-          </div>
         </div>
-      </Container>
-    </section>
+      </div>
+    </Section>
   );
 }
 
@@ -232,15 +245,24 @@ function Field({
   );
 }
 
-function DirectLink({ href, children }: { href: string; children: React.ReactNode }) {
+function DirectLink({
+  href,
+  icon: Icon,
+  children,
+}: {
+  href: string;
+  icon: IconComponent;
+  children: React.ReactNode;
+}) {
   return (
     <li>
       <a
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex h-11 items-center rounded-full bg-white/8 px-4 text-sm font-medium text-white ring-1 ring-white/12 ring-inset transition-colors hover:bg-white/14"
+        className="inline-flex h-11 items-center gap-2 rounded-full bg-white/8 px-4 text-sm font-medium text-white ring-1 ring-white/12 ring-inset transition-colors hover:bg-white/14"
       >
+        <Icon className="size-4 text-brand-light" />
         {children}
       </a>
     </li>

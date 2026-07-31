@@ -13,6 +13,12 @@ import { routeHref } from "@/lib/routes";
 import type { Locale } from "@/i18n/config";
 import type { Dict } from "@/i18n";
 
+/**
+ * Футер нарочно плоский и без разделительных линий: фон у него тот же
+ * белый, что у страницы, поэтому он не «секция», а тихое завершение.
+ * Разделы идут горизонтальной строкой — вертикальная колонка на шесть
+ * пунктов оставляла справа пустое поле высотой в целый экран.
+ */
 export default function Footer({ dict, locale }: { dict: Dict; locale: Locale }) {
   const year = new Date().getFullYear();
 
@@ -34,28 +40,27 @@ export default function Footer({ dict, locale }: { dict: Dict; locale: Locale })
   ];
 
   return (
-    <footer className="border-t border-line-dark bg-night text-white">
-      <Container>
-        <div className="grid gap-10 py-14 sm:py-16 lg:grid-cols-[1.4fr_1fr_1fr] lg:gap-16">
-          <div>
-            <Link href={`/${locale}`} aria-label="Defcode">
-              <Logo variant="dark" className="h-7 w-auto" />
+    <footer className="bg-white">
+      <Container className="pt-6 pb-8 sm:pt-8 sm:pb-10">
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between lg:gap-12">
+          <div className="max-w-sm">
+            <Link href={`/${locale}`} aria-label="Defcode" className="inline-block">
+              <Logo className="h-6 w-auto" />
             </Link>
-            <p className="mt-5 max-w-sm text-[15px] leading-relaxed text-pretty text-muted-dark">
+            <p className="mt-3 text-sm leading-relaxed text-pretty text-muted">
               {dict.footer.tagline}
             </p>
           </div>
 
           <nav aria-label={dict.footer.navHeading}>
-            <h2 className="font-mono text-xs tracking-widest text-muted-dark uppercase">
-              {dict.footer.navHeading}
-            </h2>
-            <ul className="mt-4 space-y-3">
+            {/* Жёсткая сетка 3×2, заполняется по колонкам. flex-wrap здесь
+                ронял последний пункт на отдельную строку — выглядело съехавшим. */}
+            <ul className="grid grid-flow-col grid-rows-3 gap-x-12 gap-y-2.5">
               {sections.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="text-[15px] text-white/85 transition-colors hover:text-white"
+                    className="text-sm font-medium text-ink/80 transition-colors hover:text-brand"
                   >
                     {item.label}
                   </Link>
@@ -64,35 +69,26 @@ export default function Footer({ dict, locale }: { dict: Dict; locale: Locale })
             </ul>
           </nav>
 
-          <div>
-            <h2 className="font-mono text-xs tracking-widest text-muted-dark uppercase">
-              {dict.footer.contactsHeading}
-            </h2>
-            {contacts.length > 0 ? (
-              <ul className="mt-4 space-y-3">
-                {contacts.map((item) => (
-                  <li key={item.href}>
-                    <a
-                      href={item.href}
-                      className="text-[15px] text-white/85 transition-colors hover:text-white"
-                    >
-                      {item.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+            {contacts.map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className="text-sm font-medium text-ink/80 transition-colors hover:text-brand"
+              >
+                {item.label}
+              </a>
+            ))}
             <Link
               href={routeHref(locale, "contacts")}
-              className="mt-5 inline-flex h-11 items-center rounded-full bg-brand px-5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
+              className="inline-flex h-10 items-center rounded-full bg-brand px-5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
             >
               {dict.nav.cta}
             </Link>
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 border-t border-line-dark py-6 text-sm text-muted-dark sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-8 flex flex-col gap-1.5 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
           {/* В копирайте стоит юрлицо, а не бренд: у ИП они называются
               одинаково, и «Defcode · ИП Defcode» читалось бы как заикание.
               Бренд и так стоит логотипом строкой выше. */}

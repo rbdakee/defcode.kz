@@ -15,23 +15,47 @@ export function Container({
   );
 }
 
+/**
+ * Тон секции-пузыря. Фон страницы всегда белый, а секции лежат на нём
+ * скруглёнными панелями: paper — рабочая светлая, night — тёмная (кейсы,
+ * форма), brand — фиолетовая (призыв). none — без панели: белая секция
+ * на белом фоне была бы невидимым пузырём, поэтому просто отступы.
+ */
+export type SectionTone = "paper" | "night" | "brand" | "none";
+
+const TONE_PANEL: Record<SectionTone, string> = {
+  paper: "bg-paper",
+  night: "bg-night text-white",
+  brand: "bg-linear-to-br from-brand to-brand-dark text-white",
+  none: "",
+};
+
 export function Section({
   id,
   children,
   className = "",
-  dark = false,
+  panelClassName = "",
+  tone = "paper",
 }: {
   id?: string;
   children: ReactNode;
   className?: string;
-  dark?: boolean;
+  /** Классы самой панели — для overflow-hidden, relative и подобного. */
+  panelClassName?: string;
+  tone?: SectionTone;
 }) {
+  const rounded = tone === "none" ? "" : "rounded-3xl lg:rounded-[2.5rem]";
+
   return (
-    <section
-      id={id}
-      className={`py-16 sm:py-20 lg:py-28 ${dark ? "bg-night text-white" : ""} ${className}`}
-    >
-      {children}
+    /* Внешние отступы — «швы» между пузырями, сквозь них виден белый фон.
+       Панель сама выполняет роль Container: второй max-w внутри неё
+       удвоил бы горизонтальные поля. */
+    <section id={id} className={`px-2 py-2 sm:px-4 sm:py-2.5 lg:px-6 lg:py-3 ${className}`}>
+      <div
+        className={`mx-auto w-full max-w-7xl px-4 py-14 sm:px-8 sm:py-16 lg:px-12 lg:py-20 ${rounded} ${TONE_PANEL[tone]} ${panelClassName}`}
+      >
+        {children}
+      </div>
     </section>
   );
 }

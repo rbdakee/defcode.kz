@@ -21,9 +21,11 @@ export default function PageHero({
   lead: string;
 }) {
   return (
-    <section className="relative overflow-hidden border-b border-line pt-10 pb-12 sm:pt-14 sm:pb-16 lg:pt-20 lg:pb-20">
+    <section className="relative overflow-hidden pt-10 pb-10 sm:pt-14 sm:pb-12 lg:pt-20 lg:pb-16">
+      {/* Радиальный градиент вместо размытого круга: прозрачный край
+          не оставляет жёсткой кромки при обрезке по границе секции. */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
-        <div className="drift absolute -top-40 -right-24 size-[26rem] rounded-full bg-brand/10 blur-3xl sm:size-[34rem]" />
+        <div className="drift absolute -top-40 -right-24 size-[26rem] bg-radial from-brand/13 to-transparent to-70% sm:size-[34rem]" />
       </div>
 
       <Container>
