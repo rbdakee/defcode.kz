@@ -1,11 +1,30 @@
+import Image from "next/image";
 import Reveal from "./Reveal";
 import { bubble, Section } from "./ui";
 import { itemAnchor } from "@/lib/routes";
+import { photos } from "@/content/photos";
 import type { Dict } from "@/i18n";
 
 export default function Process({ dict }: { dict: Dict }) {
   return (
     <Section id="process">
+      {/* Снимок перед лестницей шагов: первый шаг — созвон и разбор
+          процесса, и переговорная объясняет это быстрее абзаца.
+          Полоса широкая и низкая, чтобы не отодвигать сами шаги за экран. */}
+      {photos.process ? (
+        <Reveal className="mb-3 block sm:mb-4">
+          <div className="relative aspect-[16/9] overflow-hidden rounded-card sm:aspect-[3/1]">
+            <Image
+              src={photos.process}
+              alt={dict.studio.processAlt}
+              fill
+              sizes="100vw"
+              className="object-cover"
+            />
+          </div>
+        </Reveal>
+      ) : null}
+
       {/* Шаг — пузырь, а не строка с линией сверху: границу держит
           заливка, поэтому список читается как лестница карточек. */}
       <ol className="grid gap-3 sm:gap-4">

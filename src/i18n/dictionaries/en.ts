@@ -32,7 +32,7 @@ const en: Dict = {
     },
     cases: {
       title: "Case studies",
-      lead: "What clients came to us with and what changed after launch. Industry, problem, solution and outcome — without company names.",
+      lead: "What clients came to us with and what changed after launch. Public sites we show in full; internal systems, through the problem and the outcome.",
       metaTitle: "Case studies — real projects · Defcode",
       metaDescription:
         "Projects in real estate, distribution, early childhood education, hospitality, manufacturing and online education: the problem, the solution and the outcome.",
@@ -55,6 +55,11 @@ const en: Dict = {
       metaTitle: "Contact — discuss your project · Defcode",
       metaDescription:
         "Tell us about your project: we reply within one business day. Phone, email, Telegram and WhatsApp.",
+    },
+
+    og: {
+      title: "Apps, web services\nand bots for business",
+      sub: "From mapping your process to launch and support",
     },
   },
 
@@ -244,7 +249,7 @@ const en: Dict = {
 
   cases: {
     heading: "Case studies",
-    sub: "Industry, problem, solution and outcome. No client names — we work on internal systems.",
+    sub: "Industry, problem, solution and outcome. Clients' internal systems are described without names or screenshots.",
     labels: {
       task: "The problem",
       solution: "What we built",
@@ -314,6 +319,106 @@ const en: Dict = {
     ],
   },
 
+  work: {
+    heading: "Selected work",
+    sub: "Public projects you can open and look through in full.",
+    visit: "Open the site",
+    items: [
+      {
+        title: "KazKioti",
+        kind: "Site for an official tractor dealer",
+        desc: "Equipment catalogue, leasing and subsidy terms, enquiries reach the manager instantly.",
+        alt: "KazKioti home page showing tractors and state support terms",
+        href: "https://kazkioti.kz/ru" as string | null,
+      },
+      {
+        title: "Play in Code",
+        kind: "Coding school for children",
+        desc: "Booking a free trial lesson and picking a course by age.",
+        alt: "Home page of the Play in Code coding school website",
+        href: "https://school.playincode.com" as string | null,
+      },
+      {
+        title: "SaqtaGo",
+        kind: "Mobile app — our own product",
+        desc: "Surplus food boxes from nearby cafés and bakeries at up to 70% off. iOS and Android.",
+        alt: "SaqtaGo app screen listing food boxes and discounts",
+        href: null as string | null,
+      },
+    ],
+  },
+
+  studio: {
+    heading: "How the work is set up",
+    text: "A small team and a process you can see: a call, a demo every one to two weeks, and messages in whichever messenger suits you. We work remotely, with clients in different cities and countries.",
+    alt: "A desk with a laptop, a notepad, a marker and glasses",
+    stripAlts: [
+      "Desks with monitors, papers and headphones",
+      "An open workspace with floor-to-ceiling windows",
+      "An office floor with workstations and plants",
+    ],
+    processAlt: "A meeting room with a flip chart and a table for calls",
+  },
+
+  demos: {
+    heading: "What it looks like in practice",
+    sub: "Two examples from the areas people ask about most.",
+  },
+
+  automation: {
+    heading: "From the form on the site to Telegram",
+    caption: "The enquiry travels the whole path on its own, with no retyping.",
+    form: {
+      label: "Enquiry from the site",
+      name: "Name",
+      nameValue: "Aigerim",
+      phone: "Phone",
+      phoneValue: "+7 705 210 44 90",
+      task: "About the task",
+      taskValue: "Need a bot to take orders",
+      submit: "Send",
+    },
+    sheet: {
+      label: "CRM and Google Sheets",
+      cols: ["Time", "Client", "Channel", "Status"],
+      rows: [
+        ["14:02", "Erlan T.", "WhatsApp", "In progress"],
+        ["15:48", "Dana K.", "Instagram", "Invoiced"],
+        ["16:20", "Marat S.", "Website", "Closed"],
+      ],
+      freshRow: ["16:31", "Aigerim", "Website", "New"],
+    },
+    telegram: {
+      label: "Telegram notification",
+      chat: "Enquiries — sales team",
+      bot: "bot",
+      title: "New enquiry",
+      channel: "Channel: website",
+      time: "16:31",
+      action: "Take it",
+    },
+  },
+
+  aiChat: {
+    heading: "The assistant answers without a manager",
+    caption: "Answers the routine customer questions around the clock.",
+    title: "Store assistant",
+    status: "replies instantly",
+    typing: "typing",
+    messages: [
+      { from: "user", text: "Hi! When will order 4172 arrive?" },
+      {
+        from: "bot",
+        text: "Hi! Order 4172 left the warehouse today at 9:40. The courier will deliver it tomorrow between 12:00 and 18:00.",
+      },
+      { from: "user", text: "Could you move it to Saturday?" },
+      {
+        from: "bot",
+        text: "Moved to Saturday, 12:00–18:00. I've emailed you the confirmation.",
+      },
+    ],
+  },
+
   process: {
     heading: "How we work",
     sub: "Five steps. You see the result at each one, not just at the end.",
@@ -364,11 +469,15 @@ const en: Dict = {
       },
       {
         title: "Your data stays yours",
-        desc: "We don't publish your interfaces, your data or your company name. We'll sign a non-disclosure agreement on request.",
+        desc: "We never publish internal systems, working data or company names. A public site goes into our work only with your permission. We'll sign a non-disclosure agreement on request.",
       },
       {
         title: "Support after handover",
         desc: "A warranty period for fixes, and the option to keep developing the product with us.",
+      },
+      {
+        title: "We'll say so if there's a simpler way",
+        desc: "If an off-the-shelf tool or a tweak to what you already have solves it, we'll tell you on the call. Taking on everything for the invoice is bad business for both sides.",
       },
     ],
   },
@@ -376,6 +485,7 @@ const en: Dict = {
   faq: {
     heading: "Frequently asked",
     sub: "If something's missing, ask in the form — we'll answer honestly.",
+    ask: "Ask your own question",
     items: [
       {
         q: "How much does development cost?",
@@ -398,8 +508,8 @@ const en: Dict = {
         a: "Come back — it's our code, so there's no relearning curve. You can also set up a maintenance arrangement from the start so changes happen as needed.",
       },
       {
-        q: "Why are there no screenshots in the case studies?",
-        a: "Almost every project we do is a client's internal system. We don't publish or show their interfaces, data or company names — and the same rule will apply to your project. Publicly we describe only the problem and the outcome.",
+        q: "Why do some projects have screenshots and others don't?",
+        a: "We only show what is already open to the whole internet — public websites, and only with the owner's permission. Internal systems: CRM, accounting, staff apps — we never show, not even anonymised. Those we describe through the problem and the outcome. The same rule will apply to your project.",
       },
       {
         q: "Do you work with clients in other cities and countries?",

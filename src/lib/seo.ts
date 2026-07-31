@@ -23,6 +23,18 @@ export function pageMetadata({
 }): Metadata {
   const urlFor = (target: Locale) => `/${target}${path}`;
 
+  /* Картинку превью подставляем руками каждой странице.
+     Файл opengraph-image.tsx закрывает только свой сегмент и вложенным
+     разделам не достаётся: без этой строки ссылка на /ru/services
+     разворачивалась бы в мессенджере серым прямоугольником, а на /ru — нет.
+     Картинка одна на язык: она про компанию, а не про конкретный раздел. */
+  const ogImage = {
+    url: `/${locale}/opengraph-image`,
+    width: 1200,
+    height: 630,
+    alt: company.name,
+  };
+
   return {
     title,
     description,
@@ -40,11 +52,13 @@ export function pageMetadata({
       description,
       url: urlFor(locale),
       locale: localeTags[locale].replace("-", "_"),
+      images: [ogImage],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
+      images: [ogImage],
     },
     robots: { index: true, follow: true },
   };

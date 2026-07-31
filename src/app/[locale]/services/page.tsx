@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import PageHero from "@/components/PageHero";
 import Services from "@/components/Services";
+import ServiceDemos from "@/components/ServiceDemos";
 import ServiceTagGroups from "@/components/ServiceTagGroups";
 import CtaBand from "@/components/CtaBand";
 import { getDict } from "@/i18n";
@@ -44,6 +45,7 @@ export default async function ServicesPage({
         lead={dict.pages.services.lead}
       />
       <Services dict={dict} />
+      <ServiceDemos dict={dict} />
       <ServiceTagGroups dict={dict} locale={locale} />
       <CtaBand dict={dict} locale={locale} />
     </>

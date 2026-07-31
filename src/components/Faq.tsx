@@ -1,16 +1,38 @@
 "use client";
 
 import { useState } from "react";
-import { bubble, Section, SectionHead } from "./ui";
+import { bubble, MoreLink, Section, SectionHead } from "./ui";
+import { routeHref } from "@/lib/routes";
+import type { Locale } from "@/i18n/config";
 import type { Dict } from "@/i18n";
 
-export default function Faq({ dict }: { dict: Dict }) {
+export default function Faq({
+  dict,
+  locale,
+}: {
+  dict: Dict;
+  locale: Locale;
+}) {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
     <Section id="faq">
       <div className="grid gap-10 lg:grid-cols-[minmax(0,22rem)_1fr] lg:gap-16">
-        <SectionHead title={dict.faq.heading} sub={dict.faq.sub} />
+        {/* Заголовок липнет к верху и едет вместе со списком: вопросов
+            восемь, и без этого левая колонка простаивала пустой почти
+            на всю высоту аккордеона. Отступ — под липкую шапку. */}
+        <div className="lg:sticky lg:top-24 lg:self-start">
+          <SectionHead title={dict.faq.heading} sub={dict.faq.sub} />
+
+          {/* Тот, кто дочитал вопросы и не нашёл своего, — самый тёплый
+              читатель на странице. Ссылка, а не вторая кнопка: полоса
+              призыва стоит сразу под секцией и спорить с ней нечему. */}
+          <MoreLink
+            href={routeHref(locale, "contacts")}
+            label={dict.faq.ask}
+            className="mt-6"
+          />
+        </div>
 
         <div className="grid gap-2 sm:gap-3">
           {dict.faq.items.map((item, i) => {

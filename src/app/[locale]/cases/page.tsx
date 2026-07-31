@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import PageHero from "@/components/PageHero";
+import Work from "@/components/Work";
 import Cases from "@/components/Cases";
 import CtaBand from "@/components/CtaBand";
 import { getDict } from "@/i18n";
@@ -42,6 +43,9 @@ export default async function CasesPage({
         title={dict.pages.cases.title}
         lead={dict.pages.cases.lead}
       />
+      {/* Сначала работы, которые можно открыть, потом закрытые кейсы:
+          так посетитель видит доказательство раньше, чем описание. */}
+      <Work dict={dict} locale={locale} />
       <Cases dict={dict} />
       <CtaBand dict={dict} locale={locale} />
     </>

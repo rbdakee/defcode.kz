@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Hero from "@/components/Hero";
 import Hooks from "@/components/Hooks";
 import ServicesPreview from "@/components/home/ServicesPreview";
+import Work from "@/components/Work";
 import CasesPreview from "@/components/home/CasesPreview";
 import ProcessPreview from "@/components/home/ProcessPreview";
 import CtaBand from "@/components/CtaBand";
@@ -43,6 +44,9 @@ export default async function Page({
       <Hero dict={dict} locale={locale} />
       <Hooks dict={dict} locale={locale} />
       <ServicesPreview dict={dict} locale={locale} />
+      {/* Показанные работы идут перед кейсами: сперва то, что можно
+          открыть и потрогать, затем закрытые проекты текстом. */}
+      <Work dict={dict} locale={locale} more />
       <CasesPreview dict={dict} locale={locale} />
       <ProcessPreview dict={dict} locale={locale} />
       <CtaBand dict={dict} locale={locale} />

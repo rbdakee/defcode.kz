@@ -144,6 +144,40 @@ body {
   }
 }
 
+/* Появление реплики в демо-диалоге с ассистентом */
+@keyframes chat-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.chat-in {
+  animation: chat-in 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Три точки «печатает». Задержку каждой точке задаёт inline-стиль. */
+@keyframes typing-dot {
+  0%,
+  60%,
+  100% {
+    opacity: 0.3;
+    transform: translate3d(0, 0, 0);
+  }
+  30% {
+    opacity: 1;
+    transform: translate3d(0, -3px, 0);
+  }
+}
+
+.typing-dot {
+  animation: typing-dot 1.3s ease-in-out infinite;
+}
+
 /* ---------------------------------------------------------------
    Уважаем системную настройку «уменьшить движение».
    Скрытое становится сразу видимым, а не остаётся невидимым навсегда.

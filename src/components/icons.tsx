@@ -228,6 +228,7 @@ export const GUARANTEE_ICONS: IconComponent[] = [
   IconCode,
   IconShield,
   IconHeadset,
+  IconBulb,
 ];
 
 /** mega.groups: аналитика · разработка · дизайн · AI · учёт · инфраструктура */

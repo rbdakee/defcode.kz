@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import PageHero from "@/components/PageHero";
+import Studio from "@/components/Studio";
 import Guarantees from "@/components/Guarantees";
 import Faq from "@/components/Faq";
 import CtaBand from "@/components/CtaBand";
@@ -43,8 +44,9 @@ export default async function AboutPage({
         title={dict.pages.about.title}
         lead={dict.pages.about.lead}
       />
+      <Studio dict={dict} />
       <Guarantees dict={dict} />
-      <Faq dict={dict} />
+      <Faq dict={dict} locale={locale} />
       <CtaBand dict={dict} locale={locale} />
     </>
   );
